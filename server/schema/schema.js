@@ -61,6 +61,20 @@ const RootQuery = new GraphQLObjectType({
         return Director.findById(args.id)
       },
     },
+    movies: {
+      // 全件取得
+      type: new GraphQLList(MovieType),
+      resolve(parent, args) {
+        return Movie.find({})
+      },
+    },
+    directors: {
+      // 全件取得
+      type: new GraphQLList(DirectorType),
+      resolve(parent, args) {
+        return Director.find({})
+      },
+    },
   },
 })
 
