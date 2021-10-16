@@ -148,6 +148,24 @@ const Mutation = new GraphQLObjectType({
         }) // {new: true}にすることで変更後の値を受け取れる
       },
     },
+    deleteMovie: {
+      type: MovieType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        return Movie.findByIdAndRemove(args.id)
+      },
+    },
+    deleteDirector: {
+      type: DirectorType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        return Director.findByIdAndRemove(args.id)
+      },
+    },
   },
 })
 
