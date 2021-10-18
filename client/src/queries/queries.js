@@ -12,3 +12,12 @@ export const MOVIE_LIST = gql`
     }
   }
 `
+
+export const DIRECTOR_LIST = gql`
+  {
+    directors {
+      id
+      name
+    }
+  }
+`
