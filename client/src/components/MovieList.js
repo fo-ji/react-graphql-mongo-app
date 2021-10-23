@@ -1,10 +1,18 @@
-import { Card, CardBody, Table } from 'reactstrap'
-import { useQuery, gql } from '@apollo/client'
+import { Card, CardBody, Table, Button } from 'reactstrap'
+import { useQuery, useMutation } from '@apollo/client'
 
-import { MOVIE_LIST } from '../queries/queries'
+import { MOVIE_LIST, DELETE_MOVIE } from '../queries/queries'
 
 function MovieList() {
   const { loading, error, data } = useQuery(MOVIE_LIST)
+  const [deleteMovie] = useMutation(DELETE_MOVIE, {
+    refetchQueries: [{ query: MOVIE_LIST }],
+    awaitRefetchQueries: true,
+  })
+
+  const handleDeleteMovie = (id) => {
+    deleteMovie({ variables: { id } })
+  }
 
   if (loading) {
     return <p>Loading...</p>
@@ -22,7 +30,7 @@ function MovieList() {
             <tr>
               <th>タイトル</th>
               <th>ジャンル</th>
-              <th>監督</th>
+              <th colSpan="2">監督</th>
             </tr>
           </thead>
           <tbody>
@@ -31,6 +39,11 @@ function MovieList() {
                 <td>{name}</td>
                 <td>{genre}</td>
                 <td>{director.name}</td>
+                <td>
+                  <Button color="primary" onClick={() => handleDeleteMovie(id)}>
+                    削除
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>
