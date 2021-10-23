@@ -2,21 +2,39 @@ import { Button, Card, CardBody, CardHeader, Form, FormGroup } from 'reactstrap'
 import { useQuery, useMutation } from '@apollo/client'
 import { useForm } from 'react-hook-form'
 
-import { DIRECTOR_LIST, ADD_MOVIE } from '../queries/queries'
+import {
+  ADD_DIRECTOR,
+  ADD_MOVIE,
+  DIRECTOR_LIST,
+  MOVIE_LIST,
+} from '../queries/queries'
 
 function SideNav() {
   const { data } = useQuery(DIRECTOR_LIST)
-  const [addMovie] = useMutation(ADD_MOVIE)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm()
+  const { register, handleSubmit } = useForm()
+  const { register: registerDirector, handleSubmit: handleSubmitDirector } =
+    useForm()
+  const [addMovie] = useMutation(ADD_MOVIE, {
+    refetchQueries: [{ query: MOVIE_LIST }],
+    awaitRefetchQueries: true,
+  })
+  const [addDirector] = useMutation(ADD_DIRECTOR, {
+    refetchQueries: [{ query: DIRECTOR_LIST }],
+    awaitRefetchQueries: true,
+  })
 
-  const onSubmit = ({ movieName, movieGenre, directorId }) => {
+  const onSubmit = ({ movieName, movieGenre, directorId }, e) => {
     addMovie({
       variables: { name: movieName, genre: movieGenre, directorId },
     })
+    e.target.reset()
+  }
+
+  const onSubmitDirector = ({ directorName, directorAge }, e) => {
+    addDirector({
+      variables: { name: directorName, age: parseInt(directorAge) },
+    })
+    e.target.reset()
   }
 
   return (
@@ -24,21 +42,21 @@ function SideNav() {
       <Card>
         <CardHeader>映画監督</CardHeader>
         <CardBody>
-          <Form>
+          <Form onSubmit={handleSubmitDirector(onSubmitDirector)}>
             <FormGroup>
               <input
                 type="text"
                 className="form-control"
-                name="directorName"
                 placeholder="監督名"
+                {...registerDirector('directorName')}
               />
             </FormGroup>
             <FormGroup>
               <input
                 type="number"
                 className="form-control"
-                name="directorAge"
                 placeholder="年齢"
+                {...registerDirector('directorAge')}
               />
             </FormGroup>
             <Button type="submit" color="primary">
